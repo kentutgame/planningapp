@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../theme/stitch_theme.dart';
 import '../../widgets/app_logo.dart';
+import '../main_navigation_screen.dart';
+
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -49,6 +51,11 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
 
     _pulseController = AnimationController(
       vsync: this,
@@ -113,6 +120,11 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
     if (!result.success) {
       setState(() => _loginError = result.message);
+    } else {
+      // Masuk langsung ke menu utama
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+      );
     }
   }
 
@@ -149,6 +161,11 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
     if (!result.success) {
       setState(() => _regError = result.message);
+    } else {
+      // Registrasi berhasil langsung ke menu utama
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+      );
     }
   }
 
@@ -749,18 +766,13 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           // Tab Views
           Padding(
             padding: const EdgeInsets.all(20),
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              child: SizedBox(
-                height: _tabController.index == 0 ? 370 : 500,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildLoginForm(),
-                    _buildRegisterForm(),
-                  ],
-                ),
-              ),
+            child: AnimatedBuilder(
+              animation: _tabController,
+              builder: (context, _) {
+                return _tabController.index == 0
+                    ? _buildLoginForm()
+                    : _buildRegisterForm();
+              },
             ),
           ),
         ],
@@ -889,7 +901,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           ],
         ),
 
-        const Spacer(),
+        const SizedBox(height: 24),
 
         // Tombol Masuk
         Container(
@@ -1098,7 +1110,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           ],
         ),
 
-        const Spacer(),
+        const SizedBox(height: 24),
 
         // Tombol Daftar
         Container(

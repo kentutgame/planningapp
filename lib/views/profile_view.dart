@@ -4,6 +4,8 @@ import '../services/planner_service.dart';
 import '../services/profile_service.dart';
 import '../services/auth_service.dart';
 import '../theme/stitch_theme.dart';
+import 'auth/auth_screen.dart';
+
 
 class ProfileView extends StatefulWidget {
   final Function(String themeMode)? onThemeChanged;
@@ -211,9 +213,14 @@ class _ProfileViewState extends State<ProfileView> {
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context);
-                AuthService().logout();
+                await AuthService().logout();
+                if (!context.mounted) return;
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const AuthScreen()),
+                  (route) => false,
+                );
               },
               child: const Text('Keluar', style: TextStyle(fontWeight: FontWeight.w700)),
             ),
