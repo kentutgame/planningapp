@@ -10,11 +10,13 @@ import '../widgets/tree_node_card.dart';
 class TreeCanvasView extends StatefulWidget {
   final String projectId;
   final bool initialFullScreen;
+  final bool isEmbeddedInTab;
 
   const TreeCanvasView({
     super.key,
     required this.projectId,
     this.initialFullScreen = false,
+    this.isEmbeddedInTab = false,
   });
 
   @override
@@ -25,13 +27,13 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
   final TransformationController _transformationController =
       TransformationController();
   final PlannerService _plannerService = PlannerService();
-  bool _isFullScreen = false;
+  bool _isManualFullScreen = false;
   double _currentScale = 1.0;
 
   @override
   void initState() {
     super.initState();
-    _isFullScreen = widget.initialFullScreen;
+    _isManualFullScreen = widget.initialFullScreen;
     _transformationController.addListener(() {
       final scale = _transformationController.value.getMaxScaleOnAxis();
       if ((scale - _currentScale).abs() > 0.05) {
@@ -77,6 +79,11 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    // Otomatis Full Screen jika posisi HP miring (landscape) ATAU tombol full screen ditekan
+    final isFullScreen = _isManualFullScreen || isLandscape;
+
     return ListenableBuilder(
       listenable: _plannerService,
       builder: (context, _) {
@@ -94,14 +101,23 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
 
         return Scaffold(
           backgroundColor: StitchColors.darkBackground,
-          appBar: _isFullScreen
+          appBar: isFullScreen
               ? null
               : AppBar(
                   backgroundColor: StitchColors.darkSurface,
-                  leading: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-                    onPressed: () => Navigator.pop(context),
-                  ),
+                  leading: widget.isEmbeddedInTab
+                      ? const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Icon(
+                            Icons.account_tree_rounded,
+                            color: StitchColors.tealGlow,
+                            size: 22,
+                          ),
+                        )
+                      : IconButton(
+                          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                          onPressed: () => Navigator.pop(context),
+                        ),
                   title: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -128,7 +144,7 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                     IconButton(
                       tooltip: 'Layar Penuh (Full Screen)',
                       icon: const Icon(Icons.fullscreen_rounded, color: StitchColors.tealGlow),
-                      onPressed: () => setState(() => _isFullScreen = true),
+                      onPressed: () => setState(() => _isManualFullScreen = true),
                     ),
                   ],
                 ),
@@ -155,7 +171,7 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
               ),
 
               // Full Screen Floating Header if in full screen
-              if (_isFullScreen)
+              if (isFullScreen)
                 Positioned(
                   top: 16,
                   left: 16,
@@ -175,12 +191,22 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                     ),
                     child: Row(
                       children: [
-                        IconButton(
-                          icon: const Icon(Icons.fullscreen_exit_rounded, color: StitchColors.tealGlow),
-                          tooltip: 'Keluar Layar Penuh',
-                          onPressed: () => setState(() => _isFullScreen = false),
-                        ),
-                        const SizedBox(width: 8),
+                        if (!isLandscape)
+                          IconButton(
+                            icon: const Icon(Icons.fullscreen_exit_rounded, color: StitchColors.tealGlow),
+                            tooltip: 'Keluar Layar Penuh',
+                            onPressed: () => setState(() => _isManualFullScreen = false),
+                          ),
+                        if (isLandscape)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 8),
+                            child: Icon(
+                              Icons.screen_rotation_rounded,
+                              color: StitchColors.tealGlow,
+                              size: 20,
+                            ),
+                          ),
+                        const SizedBox(width: 4),
                         Text(project.emoji, style: const TextStyle(fontSize: 20)),
                         const SizedBox(width: 10),
                         Expanded(
@@ -303,11 +329,11 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                         icon: const Icon(Icons.center_focus_strong_rounded, color: StitchColors.tealGlow, size: 20),
                         onPressed: _resetZoom,
                       ),
-                      if (!_isFullScreen)
+                      if (!isFullScreen)
                         IconButton(
                           tooltip: 'Layar Penuh',
                           icon: const Icon(Icons.fullscreen_rounded, color: StitchColors.indigoAccent, size: 20),
-                          onPressed: () => setState(() => _isFullScreen = true),
+                          onPressed: () => setState(() => _isManualFullScreen = true),
                         ),
                     ],
                   ),
