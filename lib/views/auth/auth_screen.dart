@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../theme/stitch_theme.dart';
+import '../../widgets/app_logo.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -658,27 +659,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         mainAxisSize: MainAxisSize.min,
         children: [
           // Header inside card
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: StitchColors.darkSurface,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: StitchColors.tealGlow.withOpacity(0.5),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.account_tree_rounded,
-                    size: 22,
-                    color: StitchColors.tealGlow,
-                  ),
+                AppLogo(
+                  size: 42,
+                  borderRadius: 12,
+                  showShadow: false,
                 ),
-                const SizedBox(width: 12),
-                const Column(
+                SizedBox(width: 12),
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(

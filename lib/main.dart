@@ -5,8 +5,8 @@ import 'services/planner_service.dart';
 import 'services/profile_service.dart';
 import 'services/supabase_config.dart';
 import 'theme/stitch_theme.dart';
-import 'views/auth/auth_screen.dart';
-import 'views/main_navigation_screen.dart';
+import 'views/splash_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,11 +51,10 @@ class BranchPlannerApp extends StatelessWidget {
           title: 'Branching Decision Planner',
           debugShowCheckedModeBanner: false,
           theme: isDark ? StitchTheme.darkTheme : StitchTheme.lightTheme,
-          home: authService.isLoggedIn
-              ? const MainNavigationScreen()
-              : const AuthScreen(),
+          home: const SplashScreen(),
         );
       },
     );
   }
 }
+
