@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../theme/stitch_theme.dart';
+import 'emoji_picker_modal.dart';
 
 class CreatePlanModal extends StatefulWidget {
   final Function({
@@ -30,10 +31,6 @@ class _CreatePlanModalState extends State<CreatePlanModal> {
     'Operasional',
     'Finansial',
     'Pribadi / Self-Growth',
-  ];
-
-  final List<String> _emojis = [
-    '🚀', '🎯', '⚡', '💡', '💼', '🌐', '🛡️', '📊', '🔥', '🏆', '⭐', '✨'
   ];
 
   @override
@@ -285,38 +282,11 @@ class _CreatePlanModalState extends State<CreatePlanModal> {
   }
 
   void _showEmojiPicker() {
-    showModalBottomSheet(
+    EmojiCollection.showPicker(
       context: context,
-      backgroundColor: StitchColors.darkSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          height: 200,
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 6,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-            ),
-            itemCount: _emojis.length,
-            itemBuilder: (context, index) {
-              final emoji = _emojis[index];
-              return InkWell(
-                onTap: () {
-                  setState(() => _selectedEmoji = emoji);
-                  Navigator.pop(context);
-                },
-                borderRadius: BorderRadius.circular(10),
-                child: Center(
-                  child: Text(emoji, style: const TextStyle(fontSize: 26)),
-                ),
-              );
-            },
-          ),
-        );
+      selectedEmoji: _selectedEmoji,
+      onSelected: (emoji) {
+        setState(() => _selectedEmoji = emoji);
       },
     );
   }

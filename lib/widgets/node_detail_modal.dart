@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/plan_model.dart';
 import '../theme/stitch_theme.dart';
+import 'emoji_picker_modal.dart';
 
 class NodeDetailModal extends StatefulWidget {
   final PlanNode node;
@@ -33,11 +34,6 @@ class _NodeDetailModalState extends State<NodeDetailModal> {
   late bool _alarmHariH;
   late String _alarmHariHTime;
   late NodeStatus _status;
-
-  final List<String> _emojis = [
-    '🎯', '🚀', '⚡', '📢', '🎁', '🎟️', '💼', '🏢', '📞', '🤝',
-    '🌐', '💻', '🏙️', '🏡', '🛡️', '💡', '🔥', '📊', '⭐', '✨'
-  ];
 
   @override
   void initState() {
@@ -488,38 +484,11 @@ class _NodeDetailModalState extends State<NodeDetailModal> {
   }
 
   void _showEmojiPicker() {
-    showModalBottomSheet(
+    EmojiCollection.showPicker(
       context: context,
-      backgroundColor: StitchColors.darkSurface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          height: 240,
-          child: GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-            ),
-            itemCount: _emojis.length,
-            itemBuilder: (context, index) {
-              final emoji = _emojis[index];
-              return InkWell(
-                onTap: () {
-                  setState(() => _selectedEmoji = emoji);
-                  Navigator.pop(context);
-                },
-                borderRadius: BorderRadius.circular(10),
-                child: Center(
-                  child: Text(emoji, style: const TextStyle(fontSize: 28)),
-                ),
-              );
-            },
-          ),
-        );
+      selectedEmoji: _selectedEmoji,
+      onSelected: (emoji) {
+        setState(() => _selectedEmoji = emoji);
       },
     );
   }

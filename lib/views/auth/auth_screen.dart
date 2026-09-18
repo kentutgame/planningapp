@@ -640,18 +640,25 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     );
   }
 
-  // --- AUTH CARD SECTION ---
   Widget _buildAuthCard() {
     return Container(
       decoration: BoxDecoration(
-        color: StitchColors.darkCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: StitchColors.darkBorder),
+        color: const Color(0xFF161922).withOpacity(0.92),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: StitchColors.tealGlow.withOpacity(0.25),
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withOpacity(0.65),
+            blurRadius: 40,
+            offset: const Offset(0, 16),
+          ),
+          BoxShadow(
+            color: StitchColors.tealGlow.withOpacity(0.08),
             blurRadius: 30,
-            offset: const Offset(0, 10),
+            spreadRadius: 2,
           ),
         ],
       ),
@@ -696,24 +703,41 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
           // Tab Bar (Masuk / Daftar)
           Container(
-            margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+            padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: StitchColors.darkSurface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: StitchColors.darkBorder),
+              color: const Color(0xFF0E1117),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.white.withOpacity(0.06)),
             ),
             child: TabBar(
               controller: _tabController,
               indicatorSize: TabBarIndicatorSize.tab,
+              dividerColor: Colors.transparent,
               indicator: BoxDecoration(
-                color: StitchColors.tealGlow,
-                borderRadius: BorderRadius.circular(10),
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF00D2B4),
+                    Color(0xFF38EF7D),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00D2B4).withOpacity(0.35),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              labelColor: Colors.black,
+              labelColor: const Color(0xFF08121E),
               unselectedLabelColor: StitchColors.textSecondary,
               labelStyle: const TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
                 fontSize: 13,
+                letterSpacing: 0.3,
               ),
               tabs: const [
                 Tab(text: 'Masuk'),
@@ -868,26 +892,55 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         const Spacer(),
 
         // Tombol Masuk
-        SizedBox(
+        Container(
           width: double.infinity,
+          height: 48,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF00D2B4),
+                Color(0xFF137FEC),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00D2B4).withOpacity(0.35),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: StitchColors.tealGlow,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             onPressed: _isLoginLoading ? null : _handleLogin,
             child: _isLoginLoading
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                    child: CircularProgressIndicator(strokeWidth: 2.2, color: Colors.white),
                   )
-                : const Text(
-                    'Masuk ke BranchPlan',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                : const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Masuk ke BranchPlan',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.arrow_forward_rounded, size: 18),
+                    ],
                   ),
           ),
         ),
@@ -1048,26 +1101,55 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         const Spacer(),
 
         // Tombol Daftar
-        SizedBox(
+        Container(
           width: double.infinity,
+          height: 48,
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF38EF7D),
+                Color(0xFF00D2B4),
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF38EF7D).withOpacity(0.35),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: StitchColors.tealGlow,
-              foregroundColor: Colors.black,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              elevation: 0,
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              foregroundColor: const Color(0xFF08121E),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             onPressed: _isRegLoading ? null : _handleRegister,
             child: _isRegLoading
                 ? const SizedBox(
                     width: 20,
                     height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                    child: CircularProgressIndicator(strokeWidth: 2.2, color: Color(0xFF08121E)),
                   )
-                : const Text(
-                    'Daftar & Buat Akun Baru',
-                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                : const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Daftar & Buat Akun Baru',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(Icons.check_circle_outline_rounded, size: 18),
+                    ],
                   ),
           ),
         ),
