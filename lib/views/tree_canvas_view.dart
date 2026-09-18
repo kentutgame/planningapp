@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../models/plan_model.dart';
 import '../services/planner_service.dart';
@@ -50,7 +51,29 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
   @override
   void dispose() {
     _transformationController.dispose();
+    // Kembalikan orientasi layar ke mode bebas saat meninggalkan kanvas
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.dispose();
+  }
+
+  void _toggleLandscapeOrientation(bool currentIsLandscape) {
+    if (currentIsLandscape) {
+      // Putar kembali ke portrait
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+      ]);
+    } else {
+      // Putar paksa ke landscape (miring layar penuh)
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    }
   }
 
   void _zoomIn() {
@@ -142,8 +165,13 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                   ),
                   actions: [
                     IconButton(
+                      tooltip: 'Mode Landscape (Layar Penuh)',
+                      icon: const Icon(Icons.screen_rotation_rounded, color: StitchColors.tealGlow),
+                      onPressed: () => _toggleLandscapeOrientation(isLandscape),
+                    ),
+                    IconButton(
                       tooltip: 'Layar Penuh (Full Screen)',
-                      icon: const Icon(Icons.fullscreen_rounded, color: StitchColors.tealGlow),
+                      icon: const Icon(Icons.fullscreen_rounded, color: StitchColors.textPrimary),
                       onPressed: () => setState(() => _isManualFullScreen = true),
                     ),
                   ],
@@ -170,8 +198,9 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                 ),
               ),
 
-              // Full Screen Floating Header if in full screen
-              if (isFullScreen)
+              // Full Screen Floating Header (Hanya muncul saat manual full screen portrait)
+              // Saat mode Landscape, layar 100% murni penuh tanpa bilah atas/bawah!
+              if (isFullScreen && !isLandscape)
                 Positioned(
                   top: 16,
                   left: 16,
@@ -191,21 +220,11 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                     ),
                     child: Row(
                       children: [
-                        if (!isLandscape)
-                          IconButton(
-                            icon: const Icon(Icons.fullscreen_exit_rounded, color: StitchColors.tealGlow),
-                            tooltip: 'Keluar Layar Penuh',
-                            onPressed: () => setState(() => _isManualFullScreen = false),
-                          ),
-                        if (isLandscape)
-                          const Padding(
-                            padding: EdgeInsets.only(right: 8),
-                            child: Icon(
-                              Icons.screen_rotation_rounded,
-                              color: StitchColors.tealGlow,
-                              size: 20,
-                            ),
-                          ),
+                        IconButton(
+                          icon: const Icon(Icons.fullscreen_exit_rounded, color: StitchColors.tealGlow),
+                          tooltip: 'Keluar Layar Penuh',
+                          onPressed: () => setState(() => _isManualFullScreen = false),
+                        ),
                         const SizedBox(width: 4),
                         Text(project.emoji, style: const TextStyle(fontSize: 20)),
                         const SizedBox(width: 10),
@@ -276,6 +295,36 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                   ),
                 ),
 
+              // Jika Landscape: Berikan tombol kecil transparan di pojok kiri atas untuk info/keluar
+              if (isLandscape)
+                Positioned(
+                  top: 12,
+                  left: 12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.55),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(project.emoji, style: const TextStyle(fontSize: 15)),
+                        const SizedBox(width: 6),
+                        Text(
+                          project.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
               // Floating Zoom Controls & Helper Dock
               Positioned(
                 bottom: 24,
@@ -328,6 +377,15 @@ class _TreeCanvasViewState extends State<TreeCanvasView> {
                         tooltip: 'Reset Kanvas',
                         icon: const Icon(Icons.center_focus_strong_rounded, color: StitchColors.tealGlow, size: 20),
                         onPressed: _resetZoom,
+                      ),
+                      IconButton(
+                        tooltip: isLandscape ? 'Kembali ke Tegak (Portrait)' : 'Miringkan Layar (Landscape)',
+                        icon: Icon(
+                          isLandscape ? Icons.stay_current_portrait_rounded : Icons.screen_rotation_rounded,
+                          color: isLandscape ? StitchColors.tealGlow : StitchColors.textPrimary,
+                          size: 20,
+                        ),
+                        onPressed: () => _toggleLandscapeOrientation(isLandscape),
                       ),
                       if (!isFullScreen)
                         IconButton(
